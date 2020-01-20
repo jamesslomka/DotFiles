@@ -1,6 +1,6 @@
 
 #Removes user @ hostname from PS1, shows path from home dir
-PS1='[\w\$ ] ~ '
+PS1='[\w] ~ '
 # NVM path
 export NVM_DIR=~/.nvm
     source $(brew --prefix nvm)/nvm.sh
