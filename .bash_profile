@@ -1,9 +1,10 @@
 
 #Removes user @ hostname from PS1, shows path from home dir
 PS1='[\w] ~ '
+
 # NVM path
-export NVM_DIR=~/.nvm
-    source $(brew --prefix nvm)/nvm.sh
+#export NVM_DIR=~/.nvm
+#    source $(brew --prefix nvm)/nvm.sh
 
 # WORKSPACE
 alias uiweb='cd Documents/Git/workspace/services/ui-website'
