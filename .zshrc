@@ -1,4 +1,4 @@
-#########################
+########################
 # CUSTOM
 #########################
 
@@ -45,6 +45,14 @@ alias dd='d kill $(d ps -a -q); d rm $(d ps -a -q)'
 alias dp='d ps -a'
 alias purgeDocker='d kill $(d ps -a -q); d rm $(d ps -a -q); d volume rm $(d volume ls -q); d network rm $(d network ls -q)'
 alias purgeDockerImages='d rmi -f $(d images -f dangling=true -q)'
+
+# Git Pull
+#
+# Will pull all branches in children directories:
+# to do all individually
+# ls | xargs -I{} git -C {} pull
+# to do all in parallel
+alias pullall='ls | xargs -P10 -I{} git -C {} pull'
 
 # Git Rebase.
 #
