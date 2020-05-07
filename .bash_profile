@@ -1,4 +1,4 @@
-# ---------------CUSTOM PREFERNECES:-------------------
+# ---------------CUSTOM PREFERENCES:-------------------
 
 # Important that you set the path to your docker-compose.yml file here
 DOCKER_COMPOSE_PATH='Documents/Git/workspace'

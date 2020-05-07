@@ -1,4 +1,4 @@
-# ---------------CUSTOM PREFERNECES:-------------------
+# ---------------CUSTOM PREFERENCES:-------------------
 
 #Removes user @ hostname from PS1
 USER=''
