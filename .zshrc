@@ -13,8 +13,8 @@ alias pip="pip3"
 # WORKSPACE
 alias gh='cd Documents/git'
 alias uiweb='cd $DOCKER_COMPOSE_PATH/services/ui-website'
-alias workspace='cd $DOCKER_COMPOSE'
-alias services='cd $DOCKER_COMPOSE/services'
+alias workspace='cd $DOCKER_COMPOSE_PATH'
+alias services='cd $DOCKER_COMPOSE_PATH/services'
 
 # Git Pull
 #
