@@ -54,6 +54,11 @@ dcr() {
     dc up -d "$1"
 }
 
+## Docker logs - for services ran with just Docker run
+dl() {
+    d logs --tail "100" -f "$1"
+}
+
 # Docker Compose Logs.
 #
 # Inspect the logs in real-time of a container by name.
