@@ -1,52 +1,11 @@
-# ---------------CUSTOM PREFERENCES:-------------------
-
-# Important that you set the path to your docker-compose.yml file here
-DOCKER_COMPOSE_PATH='Documents/Git/workspace'
-
-#Removes user @ hostname from PS1, shows path from home dir
-PS1='[\w] ~ '
-
-# PYTHON
-alias python="python3"
-alias pip="pip3"
-
-# WORKSPACE
-alias gh='cd Documents/git'
-alias uiweb='cd $DOCKER_COMPOSE_PATH/services/ui-website'
-alias workspace='cd $DOCKER_COMPOSE_PATH'
-alias services='cd $DOCKER_COMPOSE_PATH/services'
-
-# Git Pull
-#
-# Will pull all branches in children directories:
-# to do all individually
-# ls | xargs -I{} git -C {} pull
-# to do all in parallel
-alias pullall='ls | xargs -P10 -I{} git -C {} pull'
-
-# reload this config file on changes
-alias r='source ~/.zshrc'
-
-# NVM path
-export NVM_DIR=~/.nvm
-    source $(brew --prefix nvm)/nvm.sh
-
-# OTHER PATHS
-alias update='brew update && brew upgrade'
-alias pgstart='pg_ctl -D /usr/local/var/postgres start'
-alias pgstop='pg_ctl -D /usr/local/var/postgres stop'
-alias subl="/Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl"
-
-alias xquarts="open -a XQuartz"
-alias sshmcgill="ssh jslomk@mimi.cs.mcgill.ca"
-alias http="python -m SimpleHTTPServer 8080"
-alias venv="source env/bin/activate"
-alias update="brew update && brew upgrade"
-
-# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
-export PATH="$PATH:$HOME/.rvm/bin"
+# Removes user @ hostname from PS1
+USER=''
 
 # ---------------DOCKER/DOCKER COMPOSE:-------------------
+
+# Important that you set the path to your docker-compose.yml file here
+
+DOCKER_COMPOSE_PATH='Git/workspace'
 
 # Runs a docker command of your choice from anywhere.
 #
@@ -59,6 +18,11 @@ dc() {
 dcr() {
     dc kill "$1"
     dc up -d "$1"
+}
+
+## Docker logs - for services ran with just Docker run
+dl() {
+    d logs --tail "100" -f "$1"
 }
 
 # Docker Compose Logs.
@@ -101,6 +65,20 @@ dcleanup() {
 }
 
 
+# ---------------GIT:-------------------
+
+# Git Pull
+#
+# Will pull all branches in children directories:
+# to do all individually
+# ls | xargs -I{} git -C {} pull
+# to do all in parallel
+alias pullall='ls | xargs -P10 -I{} git -C {} pull'
+
+# Undo commit but keep all changes staged
+alias reset='git reset --soft HEAD~;'
+
+
 # Git Rebase.
 #
 # Rebases the specified branch onto the current branch,
@@ -119,3 +97,31 @@ dcleanup() {
 #     git add -A
 #     git commit -m "${MSG}"
 # }
+
+# ---------------PYTHON:-------------------
+alias python="python3"
+alias pip="pip3"
+
+
+# ---------------ALIAS:-------------------
+alias uiweb='cd $DOCKER_COMPOSE_PATH/services/ui-website'
+alias workspace='cd $DOCKER_COMPOSE_PATH'
+alias services='cd $DOCKER_COMPOSE_PATH/services'
+alias update='brew update && brew upgrade'
+alias pgstart='pg_ctl -D /usr/local/var/postgres start'
+alias pgstop='pg_ctl -D /usr/local/var/postgres stop'
+alias subl="/Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl"
+
+
+# ---------------CUSTOM CONFIG:-------------------
+
+# reload this config file on changes
+alias r='source ~/.zshrc'
+
+# NVM path
+export NVM_DIR=~/.nvm
+    source $(brew --prefix nvm)/nvm.sh
+
+# OTHER PATHS
+export PATH="$PATH:$HOME/.rvm/bin"
+

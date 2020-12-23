@@ -1,45 +1,11 @@
-# ---------------CUSTOM PREFERENCES:-------------------
-
-#Removes user @ hostname from PS1
+# Removes user @ hostname from PS1
 USER=''
 
-# Important that you set the path to your docker-compose.yml file here
-DOCKER_COMPOSE_PATH='Documents/Git/workspace'
-
-# PYTHON
-alias python="python3"
-alias pip="pip3"
-
-# WORKSPACE
-alias gh='cd Documents/git'
-alias uiweb='cd $DOCKER_COMPOSE_PATH/services/ui-website'
-alias workspace='cd $DOCKER_COMPOSE_PATH'
-alias services='cd $DOCKER_COMPOSE_PATH/services'
-
-# Git Pull
-#
-# Will pull all branches in children directories:
-# to do all individually
-# ls | xargs -I{} git -C {} pull
-# to do all in parallel
-alias pullall='ls | xargs -P10 -I{} git -C {} pull'
-
-# reload this config file on changes
-alias r='source ~/.zshrc'
-
-# NVM path
-export NVM_DIR=~/.nvm
-    source $(brew --prefix nvm)/nvm.sh
-
-# OTHER PATHS
-alias update='brew update && brew upgrade'
-alias pgstart='pg_ctl -D /usr/local/var/postgres start'
-alias pgstop='pg_ctl -D /usr/local/var/postgres stop'
-alias subl="/Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl"
-
-export PATH="$PATH:$HOME/.rvm/bin"
-
 # ---------------DOCKER/DOCKER COMPOSE:-------------------
+
+# Important that you set the path to your docker-compose.yml file here
+
+DOCKER_COMPOSE_PATH='Git/workspace'
 
 # Runs a docker command of your choice from anywhere.
 #
@@ -99,6 +65,20 @@ dcleanup() {
 }
 
 
+# ---------------GIT:-------------------
+
+# Git Pull
+#
+# Will pull all branches in children directories:
+# to do all individually
+# ls | xargs -I{} git -C {} pull
+# to do all in parallel
+alias pullall='ls | xargs -P10 -I{} git -C {} pull'
+
+# Undo commit but keep all changes staged
+alias reset='git reset --soft HEAD~;'
+
+
 # Git Rebase.
 #
 # Rebases the specified branch onto the current branch,
@@ -118,10 +98,58 @@ dcleanup() {
 #     git commit -m "${MSG}"
 # }
 
+# ---------------PYTHON:-------------------
+alias python="python3"
+alias pip="pip3"
+
+
+# ---------------ALIAS:-------------------
+alias uiweb='cd $DOCKER_COMPOSE_PATH/services/ui-website'
+alias workspace='cd $DOCKER_COMPOSE_PATH'
+alias services='cd $DOCKER_COMPOSE_PATH/services'
+alias update='brew update && brew upgrade'
+alias pgstart='pg_ctl -D /usr/local/var/postgres start'
+alias pgstop='pg_ctl -D /usr/local/var/postgres stop'
+alias subl="/Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl"
+
+
+# ---------------CUSTOM CONFIG:-------------------
+
+# reload this config file on changes
+alias r='source ~/.zshrc'
+
+# NVM path
+export NVM_DIR=~/.nvm
+    source $(brew --prefix nvm)/nvm.sh
+
+# OTHER PATHS
+export PATH="$PATH:$HOME/.rvm/bin"
+
+
 # ---------------ZSH CONFIG:-------------------
 
 export ZSH="/Users/james.slomka/.oh-my-zsh"
-ZSH_THEME="agnoster"
-plugins=(git)
+# ZSH_THEME="pure"
+plugins=(
+  git
+  zsh-syntax-highlighting
+  node
+  npm
+  cp
+)
+# For pure theme -----------------------
+autoload -U promptinit; promptinit
+
+# change the color for both `prompt:success` and `prompt:error`
+# zstyle ':git:dirty' color blue
+
+zstyle ':prompt:pure:git:branch' color white
+
+#  turn on git stash status
+zstyle :prompt:pure:git:stash show yes
+
+PURE_GIT_DOWN_ARROW=↓
+
+prompt pure
 
 source $ZSH/oh-my-zsh.sh
