@@ -1,13 +1,14 @@
-# Removes user @ hostname from PS1
-USER=''
+# ------------------------------------------------------------------------------
+# ----------------------------------DOCKER--------------------------------------
+# ------------------------------------------------------------------------------
 
-# ---------------DOCKER/DOCKER COMPOSE:-------------------
 
-# Important that you set the path to your docker-compose.yml file here
+#                        !!!!!!! Important !!!!!!!!!!!
+#
+#             Set the path to your docker-compose.yml file here
+DOCKER_COMPOSE_PATH='workspace'
 
-DOCKER_COMPOSE_PATH='Git/workspace'
-
-# Runs a docker command of your choice from anywhere.
+# Runs a docker-compose command of your choice from anywhere.
 #
 # Usage: dc <command>
 dc() {
@@ -64,8 +65,9 @@ dcleanup() {
     docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v /etc:/etc spotify/docker-gc
 }
 
-
-# ---------------GIT:-------------------
+# ------------------------------------------------------------------------------
+# ---------------------------------- GIT----------------------------------------
+# ------------------------------------------------------------------------------
 
 # Git Pull
 #
@@ -98,23 +100,10 @@ alias reset='git reset --soft HEAD~;'
 #     git commit -m "${MSG}"
 # }
 
-# ---------------PYTHON:-------------------
-alias python="python3"
-alias pip="pip3"
 
-
-# ---------------ALIAS:-------------------
-alias uiweb='cd $DOCKER_COMPOSE_PATH/services/ui-website'
-alias workspace='cd $DOCKER_COMPOSE_PATH'
-alias services='cd $DOCKER_COMPOSE_PATH/services'
-alias update='brew update && brew upgrade'
-alias pgstart='pg_ctl -D /usr/local/var/postgres start'
-alias pgstop='pg_ctl -D /usr/local/var/postgres stop'
-alias subl="/Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl"
-
-
-# ---------------CUSTOM CONFIG:-------------------
-
+# ------------------------------------------------------------------------------
+# -----------------------------CUSTOM CONFIG:-----------------------------------
+# ------------------------------------------------------------------------------
 # reload this config file on changes
 alias r='source ~/.zshrc'
 
@@ -126,10 +115,24 @@ export NVM_DIR=~/.nvm
 export PATH="$PATH:$HOME/.rvm/bin"
 
 
-# ---------------ZSH CONFIG:-------------------
+# ----------------------------------ALIAS:--------------------------------------
+alias uiweb='cd $DOCKER_COMPOSE_PATH/services/ui-website'
+alias workspace='cd $DOCKER_COMPOSE_PATH'
+alias services='cd $DOCKER_COMPOSE_PATH/services'
+alias update='brew update && brew upgrade'
+alias pgstart='pg_ctl -D /usr/local/var/postgres start'
+alias pgstop='pg_ctl -D /usr/local/var/postgres stop'
+alias subl="/Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl"
+alias python="python3"
+alias pip="pip3"
 
-export ZSH="/Users/james.slomka/.oh-my-zsh"
-# ZSH_THEME="pure"
+
+# ------------------------------------------------------------------------------
+# -------------------------------ZSH CONFIG:------------------------------------
+# ------------------------------------------------------------------------------
+
+export ZSH="~/.oh-my-zsh"
+
 plugins=(
   git
   zsh-syntax-highlighting
@@ -137,19 +140,12 @@ plugins=(
   npm
   cp
 )
-# For pure theme -----------------------
+
+# Pure Theme
 autoload -U promptinit; promptinit
-
 # change the color for both `prompt:success` and `prompt:error`
-# zstyle ':git:dirty' color blue
-
 zstyle ':prompt:pure:git:branch' color white
-
-#  turn on git stash status
+# turn on git stash status
 zstyle :prompt:pure:git:stash show yes
-
 PURE_GIT_DOWN_ARROW=↓
-
 prompt pure
-
-source $ZSH/oh-my-zsh.sh
