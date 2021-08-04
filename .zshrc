@@ -125,7 +125,7 @@ alias pgstop='pg_ctl -D /usr/local/var/postgres stop'
 alias subl="/Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl"
 alias python="python3"
 alias pip="pip3"
-
+alias ngrok="ngrok http 8080 -host-header="localhost:8080""
 
 # ------------------------------------------------------------------------------
 # -------------------------------ZSH CONFIG:------------------------------------

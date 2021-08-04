@@ -47,6 +47,7 @@ CASKS=(
     atom
     webstorm
     datagrip
+    ngrok
 )
 
 echo "Installing cask apps..."
