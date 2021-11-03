@@ -34,6 +34,7 @@ PACKAGES=(
     wget
     zsh-autosuggestions
     zsh-syntax-highlighting
+    kubectl
 )
 
 echo "Installing brew packages..."
