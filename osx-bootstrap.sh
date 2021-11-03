@@ -48,6 +48,7 @@ CASKS=(
     webstorm
     datagrip
     ngrok
+    lens
 )
 
 echo "Installing cask apps..."
