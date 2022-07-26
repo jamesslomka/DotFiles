@@ -1,0 +1,18 @@
+#!/bin/bash
+
+PROTECTED_BRANCHES="(master|main)"
+
+if read local_ref local_sha remote_ref remote_sha; then
+    if [[ "$remote_ref" =~ $PROTECTED_BRANCHES ]]; then
+        echo -en "\033[1;33mYou're about to push to master, is that what you intended? [y|n] \033[0m"
+        echo -en "\033[1m"
+        read -n 1 -r < /dev/tty
+        echo -en "\033[0m"
+
+        echo
+        if echo $REPLY | grep -E '^[Yy]$' > /dev/null; then
+            exit 0 # push will execute
+        fi
+        exit 1 # push will not execute
+    fi
+fi
