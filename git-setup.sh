@@ -10,4 +10,4 @@ git config --global --add --bool push.autoSetupRemote true
 # Setup git pre push hook to prevent unwanted push to self-defined protected branches
 mkdir ~/.githooks
 cp scripts/pre-push ~/.githooks
-git config --global core.hooksPath ~/.githooks-test/
+git config --global core.hooksPath ~/.githooks
