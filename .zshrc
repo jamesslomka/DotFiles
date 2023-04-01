@@ -3,17 +3,19 @@
 # ------------------------------------------------------------------------------
 
 
-#                        !!!!!!! Important !!!!!!!!!!!
+# ------------------------------- Important ------------------------------------
 #
-#             Set the path to your docker-compose.yml file here
+# Set the path to your docker-compose.yml file here:
 DOCKER_COMPOSE_PATH='workspace'
 
-# Usage: dc <command>
+# Runs a docker-compose command of your choice from anywhere.
+# Usage: dc <service>
 dc() {
         docker-compose --project-directory ~/$DOCKER_COMPOSE_PATH -f  ~/$DOCKER_COMPOSE_PATH/docker-compose.yml $@
 }
 
 # Docker-compose restart
+# Usage: dcr <service>
 dcr() {
     dc kill "$1"
     dc up -d "$1"
@@ -53,7 +55,9 @@ alias dp='d ps -a'
 alias purgeDocker='d kill $(d ps -a -q); d rm $(d ps -a -q); d volume rm $(d volume ls -q); d network rm $(d network ls -q)'
 alias purgeDockerImages='d rmi -f $(d images -f dangling=true -q)'
 
+# Docker Cleanup.
 # Deletes all containers and images.
+#
 # Usage: dcleanup
 dcleanup() {
     docker rm $(docker ps -q -f 'status=exited')
@@ -67,11 +71,9 @@ dcleanup() {
 
 # Git Pull
 #
-# Will pull all branches in children directories
-
+# Will pull all branches in children directories:
 # to do all individually
 # ls | xargs -I{} git -C {} pull
-
 # to do all in parallel
 alias pullall='ls | xargs -P10 -I{} git -C {} pull'
 
@@ -103,13 +105,6 @@ alias reset='git reset --soft HEAD~;'
 # -----------------------------CUSTOM CONFIG:-----------------------------------
 # ------------------------------------------------------------------------------
 
-# Remove "last login" message from terminal
-if [ ! -e ~/.hushlogin ]
-then
-    touch .hushlogin
-fi
-
-
 # reload this config file on changes
 alias r='source ~/.zshrc'
 
@@ -120,32 +115,45 @@ export NVM_DIR=~/.nvm
 # OTHER PATHS
 export PATH="$PATH:$HOME/.rvm/bin"
 
+# React Native
+export ANDROID_HOME=$HOME/Library/Android/sdk
+export PATH=$PATH:$ANDROID_HOME/emulator
+export PATH=$PATH:$ANDROID_HOME/tools
+export PATH=$PATH:$ANDROID_HOME/tools/bin
+export PATH=$PATH:$ANDROID_HOME/platform-tools
 
-# ----------------------------------ALIAS:--------------------------------------
+
 alias uiweb='cd $DOCKER_COMPOSE_PATH/services/ui-website'
 alias workspace='cd $DOCKER_COMPOSE_PATH'
 alias services='cd $DOCKER_COMPOSE_PATH/services'
+alias morning='update && workspace && make login-sso'
 alias update='brew update && brew upgrade'
+alias pgstart='pg_ctl -D /usr/local/var/postgres start'
+alias pgstop='pg_ctl -D /usr/local/var/postgres stop'
 alias subl="/Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl"
 alias python="python3"
 alias pip="pip3"
-alias ngrok="ngrok http 8080 -host-header="localhost:8080""
+alias ngrok="ngrok http https://localhost:5000 --host-header="localhost:5000""
 alias awssso="aws sso login --profile "$1""
 alias localip="ipconfig getifaddr en0"
+alias kube="kubectl"
+alias refresh-alias='curl -sS https://raw.githubusercontent.com/jamesslomka/DotFiles/master/.zshrc >> ~/.zshrc'
 
 # ------------------------------------------------------------------------------
 # -------------------------------ZSH CONFIG:------------------------------------
 # ------------------------------------------------------------------------------
 
-export ZSH="~/.oh-my-zsh"
+source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 plugins=(
   git
-  zsh-syntax-highlighting
+  zsh-autosuggestions
   node
   npm
   cp
+  zsh-syntax-highlighting # needs to always be the last plugin
 )
+# autoload -U compinit; compinit -y
 
 # Pure Theme
 autoload -U promptinit; promptinit
@@ -154,4 +162,19 @@ zstyle ':prompt:pure:git:branch' color white
 # turn on git stash status
 zstyle :prompt:pure:git:stash show yes
 PURE_GIT_DOWN_ARROW=↓
+# Git *when branch has changes from remote
+# zstyle :prompt:pure:git:dirty color '#808080'
+zstyle :prompt:pure:git:dirty color '#7a7a7a'
+
+
+
 prompt pure
+
+
+# tabtab source for packages
+# uninstall by removing these lines
+[[ -f ~/.config/tabtab/__tabtab.zsh ]] && . ~/.config/tabtab/__tabtab.zsh || true
+
+
+source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
