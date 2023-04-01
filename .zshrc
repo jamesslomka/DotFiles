@@ -105,6 +105,12 @@ alias reset='git reset --soft HEAD~;'
 # -----------------------------CUSTOM CONFIG:-----------------------------------
 # ------------------------------------------------------------------------------
 
+# Remove "last login" message from terminal
+if [ ! -e ~/.hushlogin ]
+then
+    touch .hushlogin
+fi
+
 # reload this config file on changes
 alias r='source ~/.zshrc'
 

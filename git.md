@@ -15,7 +15,7 @@ Two factor authentication must be enabled under [settings/security](https://gith
 
 > IMPORTANT: After two-factor authentication is enabled, safely store your recovery codes in your password manager !
 
-Go to: [settings/emails](https://github.com/settings/emails) and add your SSENSE email
+Go to: [settings/emails](https://github.com/settings/emails) and add your email
 
 
 #### SSH Config
@@ -28,9 +28,9 @@ To sign in on the CLI, you will need to create a one time key:
 
  `cd`
 
- Then, to create the key, replace `"YOUR_SSENSE_EMAIL"` with - yep, you guessed it - your SSENSE email.
+ Then, to create the key, replace `"your_email"` with - yep, you guessed it - your email.
 
-`ssh-keygen -t rsa -b 4096 -C "YOUR_SSENSE_EMAIL"`
+`ssh-keygen -t rsa -b 4096 -C "your_email"`
 
 You can press enter for the next three prompts (using the default directory and empty passphrase)
 
@@ -48,9 +48,7 @@ Choose a folder to save your Github repositories to (e.g. in your home folder, `
 
 `cd Git`
 
-Clone the [onboarding](https://github.com/Groupe-Atallah/onboarding) repository (make sure to copy the ssh link):
-
-`git clone git@github.com:Groupe-Atallah/onboarding.git`
+Clone a reposity using the SSH link
 
 When prompted, enter your GitHub username.
 
