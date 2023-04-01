@@ -8,8 +8,6 @@
 #             Set the path to your docker-compose.yml file here
 DOCKER_COMPOSE_PATH='workspace'
 
-# Runs a docker-compose command of your choice from anywhere.
-#
 # Usage: dc <command>
 dc() {
         docker-compose --project-directory ~/$DOCKER_COMPOSE_PATH -f  ~/$DOCKER_COMPOSE_PATH/docker-compose.yml $@
@@ -55,9 +53,7 @@ alias dp='d ps -a'
 alias purgeDocker='d kill $(d ps -a -q); d rm $(d ps -a -q); d volume rm $(d volume ls -q); d network rm $(d network ls -q)'
 alias purgeDockerImages='d rmi -f $(d images -f dangling=true -q)'
 
-# Docker Cleanup.
 # Deletes all containers and images.
-#
 # Usage: dcleanup
 dcleanup() {
     docker rm $(docker ps -q -f 'status=exited')
@@ -71,9 +67,11 @@ dcleanup() {
 
 # Git Pull
 #
-# Will pull all branches in children directories:
+# Will pull all branches in children directories
+
 # to do all individually
 # ls | xargs -I{} git -C {} pull
+
 # to do all in parallel
 alias pullall='ls | xargs -P10 -I{} git -C {} pull'
 
@@ -104,6 +102,14 @@ alias reset='git reset --soft HEAD~;'
 # ------------------------------------------------------------------------------
 # -----------------------------CUSTOM CONFIG:-----------------------------------
 # ------------------------------------------------------------------------------
+
+# Remove "last login" message from terminal
+if [ ! -e ~/.hushlogin ]
+then
+    touch .hushlogin
+fi
+
+
 # reload this config file on changes
 alias r='source ~/.zshrc'
 
@@ -120,8 +126,6 @@ alias uiweb='cd $DOCKER_COMPOSE_PATH/services/ui-website'
 alias workspace='cd $DOCKER_COMPOSE_PATH'
 alias services='cd $DOCKER_COMPOSE_PATH/services'
 alias update='brew update && brew upgrade'
-alias pgstart='pg_ctl -D /usr/local/var/postgres start'
-alias pgstop='pg_ctl -D /usr/local/var/postgres stop'
 alias subl="/Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl"
 alias python="python3"
 alias pip="pip3"

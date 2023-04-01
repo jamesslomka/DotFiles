@@ -26,7 +26,8 @@ fi
 
 
 PACKAGES=(
-    awscli
+    git
+    aws-cli
     cask
     pure
     python3
@@ -35,6 +36,8 @@ PACKAGES=(
     zsh-autosuggestions
     zsh-syntax-highlighting
     kubectl
+    node
+    npm
 )
 
 echo "Installing brew packages..."
@@ -44,43 +47,19 @@ echo "Installing powerline fonts"
 pip3 install --user powerline-status
 
 CASKS=(
+    google-chrome
+    docker
     sublime-text
     atom
     webstorm
     datagrip
     ngrok
     lens
+    infra
 )
 
 echo "Installing cask apps..."
 brew install --cask ${CASKS[@]}
-
-echo "Checking for docker"
-if test ! $(which docker); then
-    echo "Installing docker..."
-    brew install --cask docker
-    echo "Done installing docker"
-else
-    echo "`docker --version` already installed"
-fi
-
-echo "Checking for nodejs"
-if test ! $(which node); then
-    echo "Installing node..."
-    brew install node
-    echo "Done installing node"
-else
-    echo "nodejs `node --version` already installed"
-fi
-
-echo "Checking for npm"
-if test ! $(which npm); then
-    echo "Installing npm..."
-    brew install npm
-    echo "Done installing npm"
-else
-    echo "npm `npm --version` already installed"
-fi
 
 echo "Installing node packages..."
 NODE_PACKAGES=(
@@ -96,6 +75,7 @@ PYTHON_PACKAGES=(
 )
 
 pip3 install ${PYTHON_PACKAGES[@]}
+
 
 echo "Cleaning up..."
 brew cleanup
