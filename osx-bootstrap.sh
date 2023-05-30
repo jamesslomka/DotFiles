@@ -38,6 +38,7 @@ PACKAGES=(
     kubectl
     node
     npm
+    cloudflared
 )
 
 echo "Installing brew packages..."
