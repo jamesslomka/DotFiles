@@ -1,0 +1,11 @@
+{
+	"theme": "Adaptive.sublime-theme",
+	"dark_theme": "Adaptive.sublime-theme",
+	"light_theme": "Adaptive.sublime-theme",
+	"color_scheme": "Monokai.sublime-color-scheme",
+	"ignored_packages":
+	[
+		"Vintage",
+	],
+	"font_size": 12,
+}
