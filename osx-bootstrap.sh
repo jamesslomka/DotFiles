@@ -40,6 +40,7 @@ PACKAGES=(
     npm
     cloudflared
     plow
+    mtr
 )
 
 echo "Installing brew packages..."
