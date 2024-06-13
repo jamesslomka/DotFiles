@@ -41,6 +41,7 @@ PACKAGES=(
     cloudflared
     plow
     mtr
+    httpstat
 )
 
 echo "Installing brew packages..."
