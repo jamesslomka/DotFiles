@@ -42,6 +42,7 @@ PACKAGES=(
     plow
     mtr
     httpstat
+    wrk
 )
 
 echo "Installing brew packages..."
