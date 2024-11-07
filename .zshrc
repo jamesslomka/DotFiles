@@ -145,6 +145,8 @@ alias localip="ipconfig getifaddr en0"
 alias kube="kubectl"
 alias refresh-alias='curl -sS https://raw.githubusercontent.com/jamesslomka/DotFiles/master/.zshrc >> ~/.zshrc'
 alias tunnel="cloudflared tunnel --url localhost:8080 --http-host-header="localhost""
+alias flushdns="dscacheutil -flushcache; sudo killall -HUP mDNSResponder"
+
 # ------------------------------------------------------------------------------
 # -------------------------------ZSH CONFIG:------------------------------------
 # ------------------------------------------------------------------------------
