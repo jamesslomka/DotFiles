@@ -43,6 +43,7 @@ PACKAGES=(
     mtr
     httpstat
     wrk
+    cloc
 )
 
 echo "Installing brew packages..."
