@@ -163,19 +163,19 @@ plugins=(
 )
 # autoload -U compinit; compinit -y
 
-# Pure Theme
+# ---- Pure Theme Settings ----
 autoload -U promptinit; promptinit
 # change the color for both `prompt:success` and `prompt:error`
 zstyle ':prompt:pure:git:branch' color white
 # turn on git stash status
 zstyle :prompt:pure:git:stash show yes
-PURE_GIT_DOWN_ARROW=↓
+# Prompt icon: >
+zstyle ':prompt:pure:prompt:*' color grey
+# Path colour
+zstyle :prompt:pure:path color '#4192d8'
 # Git *when branch has changes from remote
-# zstyle :prompt:pure:git:dirty color '#808080'
 zstyle :prompt:pure:git:dirty color '#7a7a7a'
-
-
-
+PURE_GIT_DOWN_ARROW=↓
 prompt pure
 
 
