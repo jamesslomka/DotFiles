@@ -44,6 +44,8 @@ PACKAGES=(
     httpstat
     wrk
     cloc
+    plow
+    pure
 )
 
 echo "Installing brew packages..."
@@ -57,11 +59,18 @@ CASKS=(
     docker
     sublime-text
     atom
+    github
     webstorm
     datagrip
     ngrok
+    notion-calendar
+    insomnia
+    figma
+    cursor
     lens
     infra
+    iterm2
+    utm
 )
 
 echo "Installing cask apps..."

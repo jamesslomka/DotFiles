@@ -1,0 +1,58 @@
+{
+  "awsAuthRefresh": "aws sso login --profile sandbox",
+  "env": {
+    "AWS_REGION": "us-west-2"
+  },
+  "permissions": {
+    "allow": [
+      "Edit",
+      "Write",
+      "Replace",
+      "Create",
+      "Read",
+      "Bash",
+      "WebFetch",
+      "Bash(true)",
+      "Bash(npm:*)",
+      "Bash(git:*)",
+      "Bash(gh:*)",
+      "Bash(ls:*)",
+      "Bash(awk:*)",
+      "Bash(sed:*)",
+      "Bash(grep:*)",
+      "Bash(rm:*)",
+      "Bash(aws:*)",
+      "Bash(node:*)",
+      "Bash(chmod:*)",
+      "Bash(find:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(gh pr list:*)",
+      "Bash(gh pr edit:*)",
+      "Bash(aws cloudformation describe-stacks:*)",
+      "Bash(git pull:*)",
+      "Bash(git checkout:*)",
+      "Bash(rm:*)",
+      "Bash(gh pr create:*)",
+      "Bash(npm run delete:qa:*)",
+      "Bash(aws cloudformation describe-stack-events:*)",
+      "Bash(aws cloudformation list-stack-resources:*)",
+      "Bash(mkdir:*)",
+      "Bash(ls:*)",
+      "Bash(grep:*)",
+      "Bash(gh pr view:*)",
+      "Bash(rg:*)",
+      "mcp__puppeteer__puppeteer_navigate",
+      "mcp__puppeteer__puppeteer_screenshot",
+      "mcp__puppeteer__puppeteer_fill",
+      "mcp__puppeteer__puppeteer_click",
+      "mcp__puppeteer__puppeteer_evaluate"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "puppeteer",
+    "context7"
+  ]
+}

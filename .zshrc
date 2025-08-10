@@ -2,16 +2,16 @@
 # ----------------------------------DOCKER--------------------------------------
 # ------------------------------------------------------------------------------
 
+export DOCKER_DEFAULT_PLATFORM=linux/arm64
+export COMPOSE_BAKE=true
 
-# ------------------------------- Important ------------------------------------
-#
 # Set the path to your docker-compose.yml file here:
 DOCKER_COMPOSE_PATH='workspace'
 
 # Runs a docker-compose command of your choice from anywhere.
 # Usage: dc <service>
 dc() {
-        docker-compose --project-directory ~/$DOCKER_COMPOSE_PATH -f  ~/$DOCKER_COMPOSE_PATH/docker-compose.yml $@
+    docker-compose --project-directory ~/$DOCKER_COMPOSE_PATH -f  ~/$DOCKER_COMPOSE_PATH/docker-compose.yml $@
 }
 
 # Docker-compose restart
@@ -35,6 +35,12 @@ dl() {
 # Usage: dcl <name>
 dcl() {
     dc logs --tail "100" -f "$1"
+}
+
+# Docker-compose up logs - starts a container and tails its logs
+dcul() {
+    dc up -d "$1"
+    dcl "$1"
 }
 
 # Docker-compose restart logs - will restart container and bring up its logs
@@ -102,63 +108,19 @@ alias reset='git reset --soft HEAD~;'
 
 
 # ------------------------------------------------------------------------------
-# -----------------------------CUSTOM CONFIG:-----------------------------------
-# ------------------------------------------------------------------------------
-
-# Remove "last login" message from terminal
-if [ ! -e ~/.hushlogin ]
-then
-    touch .hushlogin
-fi
-
-# reload this config file on changes
-alias r='source ~/.zshrc'
-
-# NVM path
-export NVM_DIR=~/.nvm
-    source $(brew --prefix nvm)/nvm.sh
-
-# OTHER PATHS
-export PATH="$PATH:$HOME/.rvm/bin"
-
-# React Native
-export ANDROID_HOME=$HOME/Library/Android/sdk
-export PATH=$PATH:$ANDROID_HOME/emulator
-export PATH=$PATH:$ANDROID_HOME/tools
-export PATH=$PATH:$ANDROID_HOME/tools/bin
-export PATH=$PATH:$ANDROID_HOME/platform-tools
-
-
-alias uiweb='cd $DOCKER_COMPOSE_PATH/services/ui-website'
-alias workspace='cd $DOCKER_COMPOSE_PATH'
-alias services='cd $DOCKER_COMPOSE_PATH/services'
-alias morning='update && workspace && make login-sso'
-alias update='brew update && brew upgrade'
-alias pgstart='pg_ctl -D /usr/local/var/postgres start'
-alias pgstop='pg_ctl -D /usr/local/var/postgres stop'
-alias subl="/Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl"
-alias python="python3"
-alias pip="pip3"
-alias ngrok="ngrok http https://localhost:5000 --host-header="localhost:5000""
-alias awssso="aws sso login --profile "$1""
-alias localip="ipconfig getifaddr en0"
-alias kube="kubectl"
-alias refresh-alias='curl -sS https://raw.githubusercontent.com/jamesslomka/DotFiles/master/.zshrc >> ~/.zshrc'
-alias tunnel="cloudflared tunnel --url localhost:8080 --http-host-header="localhost""
-alias flushdns="dscacheutil -flushcache; sudo killall -HUP mDNSResponder"
-
-# ------------------------------------------------------------------------------
 # -------------------------------ZSH CONFIG:------------------------------------
 # ------------------------------------------------------------------------------
 
 source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 
+fpath+=("$(brew --prefix)/share/zsh/site-functions")
+
 plugins=(
   git
-  zsh-autosuggestions
   node
   npm
   cp
+  zsh-autosuggestions
   zsh-syntax-highlighting # needs to always be the last plugin
 )
 # autoload -U compinit; compinit -y
@@ -178,11 +140,89 @@ zstyle :prompt:pure:git:dirty color '#7a7a7a'
 PURE_GIT_DOWN_ARROW=↓
 prompt pure
 
+# ------------------------------------------------------------------------------
+# -----------------------------CUSTOM CONFIG:-----------------------------------
+# ------------------------------------------------------------------------------
 
-# tabtab source for packages
-# uninstall by removing these lines
-[[ -f ~/.config/tabtab/__tabtab.zsh ]] && . ~/.config/tabtab/__tabtab.zsh || true
+# Remove "last login" message from terminal
+if [ ! -e ~/.hushlogin ]
+then
+    touch .hushlogin
+fi
+
+# rbenv for ap-mobile
+eval "$(rbenv init -)"
+export VOLTA_HOME="$HOME/.volta"
+export PATH="$VOLTA_HOME/bin:$PATH"
+
+# NVM path
+export NVM_DIR=~/.nvm
+    source $(brew --prefix nvm)/nvm.sh
+
+# OTHER PATHS
+export PATH="$PATH:$HOME/.rvm/bin"
+
+# tfswitch = https://github.com/warrensbox/terraform-switcher/issues/219#issuecomment-1105757975
+ export PATH=$PATH:/Users/james.slomka/bin
+
+# React Native
+export ANDROID_HOME=$HOME/Library/Android/sdk
+export PATH=$PATH:$ANDROID_HOME/emulator
+export PATH=$PATH:$ANDROID_HOME/tools
+export PATH=$PATH:$ANDROID_HOME/tools/bin
+export PATH=$PATH:$ANDROID_HOME/platform-tools
+
+# reload this config file on changes
+alias r='source ~/.zshrc'
+alias uiweb='cd $DOCKER_COMPOSE_PATH/services/ui-website'
+alias apweb='cd $DOCKER_COMPOSE_PATH/services/ap-website'
+alias workspace='cd $DOCKER_COMPOSE_PATH'
+alias services='cd $DOCKER_COMPOSE_PATH/services'
+alias morning='update && workspace && make login-sso'
+alias update='brew update && brew upgrade'
+alias pgstart='pg_ctl -D /usr/local/var/postgres start'
+alias pgstop='pg_ctl -D /usr/local/var/postgres stop'
+alias subl="/Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl"
+alias python="python3"
+alias pip="pip3"
+alias grok="ngrok http http://localhost:8080 --host-header="localhost:8080""
+alias awssso="aws sso login --profile "$1""
+alias localip="ipconfig getifaddr en0"
+alias kube="kubectl"
+alias refresh-alias='curl -sS https://raw.githubusercontent.com/jamesslomka/DotFiles/master/.zshrc >> ~/.zshrc'
+alias tunnel="cloudflared tunnel --url http://localhost:8787 --http-host-header="localhost""
+alias eks-qa="kubectl config use-context arn:aws:eks:us-west-2:897347678622:cluster/main-eks-qa"
+alias eks-prod="kubectl config use-context arn:aws:eks:us-west-2:546249166250:cluster/main-eks-prod"
+alias login="cd ~/$DOCKER_COMPOSE_PATH && make login"
+alias jumphost="aws ssm start-session --profile oncallsupport --target i-06a12dd598478761b --region us-west-2 --document-name SSM-SessionManagerRunShell"
+alias mtr='sudo mtr' # https://github.com/traviscross/mtr/issues/204
+alias flushdns="sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder"
+alias ccusage="bunx ccusage"
 
 
-# required for zsh-syntax-highlighting.zsh
-source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+renamebranch() {
+    current_branch=$(git rev-parse --abbrev-ref HEAD)
+    git branch -m $current_branch $1
+    git push origin --delete $current_branch
+    git push origin -u $1
+} 
+
+n() {
+  if [[ -f package-lock.json ]]; then
+    command npm "$@"
+  elif [[ -f pnpm-lock.yaml ]]; then
+    command pnpm "$@"
+  elif [[ -f yarn.lock ]]; then
+    command yarn "$@"
+  elif [[ -f bun.lockb ]]; then
+    command bun "$@"
+  else
+    command npm "$@"
+  fi
+}
+
+# Shopify Hydrogen alias to local projects
+alias h2='$(npm prefix -s)/node_modules/.bin/shopify hydrogen'
+
+. "$HOME/.local/bin/env"
+export PATH="$HOME/.local/bin:$PATH"
