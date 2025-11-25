@@ -13,7 +13,7 @@ if test ! $(which brew); then
     echo "Done installing homebrew."
 fi
 
-echo "Running brew update'..."
+echo "Running brew update..."
 brew update
 
 echo "Installing oh-my-zsh"
@@ -24,57 +24,11 @@ else
     echo "oh-my-zsh already installed"
 fi
 
-
-PACKAGES=(
-    git
-    aws-cli
-    cask
-    pure
-    python3
-    vim
-    wget
-    zsh-autosuggestions
-    zsh-syntax-highlighting
-    kubectl
-    node
-    npm
-    cloudflared
-    plow
-    mtr
-    httpstat
-    wrk
-    cloc
-    plow
-    pure
-)
-
-echo "Installing brew packages..."
-brew install ${PACKAGES[@]}
+echo "Installing packages and apps from Brewfile..."
+brew bundle install
 
 echo "Installing powerline fonts"
 pip3 install --user powerline-status
-
-CASKS=(
-    google-chrome
-    docker
-    sublime-text
-    atom
-    github
-    webstorm
-    datagrip
-    ngrok
-    notion-calendar
-    insomnia
-    figma
-    cursor
-    lens
-    infra
-    iterm2
-    utm
-)
-
-echo "Installing cask apps..."
-brew install --cask ${CASKS[@]}
 
 echo "Installing node packages..."
 NODE_PACKAGES=(
