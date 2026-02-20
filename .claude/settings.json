@@ -1,8 +1,15 @@
 {
-  "awsAuthRefresh": "aws sso login --profile sandbox",
-  "env": {
-    "AWS_REGION": "us-west-2"
+  "env": {},
+  "statusLine": {
+    "type": "command",
+    "command": "/Users/james.slomka/.claude/statusline.sh"
   },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "puppeteer",
+    "context7"
+  ],
+  "cleanupPeriodDays": 9999,
   "permissions": {
     "allow": [
       "Edit",
@@ -49,10 +56,5 @@
       "mcp__puppeteer__puppeteer_click",
       "mcp__puppeteer__puppeteer_evaluate"
     ]
-  },
-  "enableAllProjectMcpServers": true,
-  "enabledMcpjsonServers": [
-    "puppeteer",
-    "context7"
-  ]
+  }
 }
