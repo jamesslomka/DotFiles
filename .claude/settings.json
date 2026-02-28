@@ -55,6 +55,15 @@
       "mcp__puppeteer__puppeteer_fill",
       "mcp__puppeteer__puppeteer_click",
       "mcp__puppeteer__puppeteer_evaluate"
-    ]
+    ],
+     "deny": [
+      "Read(*.env)",
+      "Read(*.env.*)",
+      "Read(*.dev.vars)",
+      "Bash(git reset --hard *)",
+      "Bash(git push --force *)",
+      "Bash(rm -rf *)",
+      "Bash(gh release delete *)"
+    ],
   }
 }
