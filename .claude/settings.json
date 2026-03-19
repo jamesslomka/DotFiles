@@ -2,7 +2,7 @@
   "env": {},
   "statusLine": {
     "type": "command",
-    "command": "/Users/james.slomka/.claude/statusline.sh"
+    "command": "~/.claude/statusline.sh"
   },
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
