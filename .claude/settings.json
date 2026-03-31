@@ -8,6 +8,7 @@
     "type": "command",
     "command": "~/.claude/statusline.sh"
   },
+  "showThinkingSummaries": true,
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "puppeteer",
