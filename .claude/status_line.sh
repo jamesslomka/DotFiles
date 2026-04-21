@@ -1,6 +1,6 @@
 #!/bin/bash
 # Claude Code statusLine script
-# Displays: directory (blue), git info, session time, context usage, lines changed
+# Displays: directory (blue), git info, session time, context usage, lines changed, cost
 
 input=$(cat)
 
@@ -9,6 +9,7 @@ cwd=$(echo "$input" | jq -r '.workspace.current_dir')
 duration_ms=$(echo "$input" | jq -r '.cost.total_duration_ms // 0')
 lines_added=$(echo "$input" | jq -r '.cost.total_lines_added // 0')
 lines_removed=$(echo "$input" | jq -r '.cost.total_lines_removed // 0')
+total_cost=$(echo "$input" | jq -r '.cost.total_cost_usd // 0')
 model=$(echo "$input" | jq -r '.model.display_name // "Claude"')
 usage=$(echo "$input" | jq '.context_window.current_usage')
 
@@ -42,6 +43,9 @@ else
     duration_display=$(printf '0:%02d' "$session_seconds")
 fi
 
+# Format cost
+cost_display=$(printf '$%.4f' "$total_cost")
+
 # Change to working directory
 cd "$cwd" 2>/dev/null || exit 0
 
@@ -64,9 +68,9 @@ if git rev-parse --git-dir > /dev/null 2>&1; then
     stash=''
     git rev-parse --verify refs/stash >/dev/null 2>&1 && stash='≡'
 
-    printf "${BLUE}%s${RESET} %s%s%s │ %s │ %s │ %s ctx │ +%s -%s" \
-        "$dir" "$branch" "$dirty" "$stash" "$model" "$duration_display" "$context_display" "$lines_added" "$lines_removed"
+    printf "${BLUE}%s${RESET} %s%s%s │ %s │ %s │ %s ctx │ +%s -%s │ %s" \
+        "$dir" "$branch" "$dirty" "$stash" "$model" "$duration_display" "$context_display" "$lines_added" "$lines_removed" "$cost_display"
 else
-    printf "${BLUE}%s${RESET} │ %s │ %s │ %s ctx │ +%s -%s" \
-        "$dir" "$model" "$duration_display" "$context_display" "$lines_added" "$lines_removed"
+    printf "${BLUE}%s${RESET} │ %s │ %s │ %s ctx │ +%s -%s │ %s" \
+        "$dir" "$model" "$duration_display" "$context_display" "$lines_added" "$lines_removed" "$cost_display"
 fi
