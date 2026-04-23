@@ -33,13 +33,17 @@ date +"%Y-%m-%d_%H-%M-%S"
 ### 2. Determine output path
 
 ```
-{git-root}/.claude/recaps/{repo-name}/{date-time}/
+~/recaps/{repo-name}/{date-time}/
 ```
 
-Create the folder and any missing parent directories with `mkdir -p`.
+Ensure the base `~/recaps/` directory exists (creating it if missing), then create the full path including any missing parent directories:
+
+```bash
+mkdir -p ~/recaps/{repo-name}/{date-time}
+```
 
 The output file will be:
-- `{git-root}/.claude/recaps/{repo-name}/{date-time}/recap.md` — structured findings
+- `~/recaps/{repo-name}/{date-time}/recap.md` — structured findings
 
 ### 3. Write the recap file
 
