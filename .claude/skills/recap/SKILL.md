@@ -28,6 +28,14 @@ ls -t ~/.claude/session-env/ 2>/dev/null | head -1 || echo "unknown-session"
 
 # Date-time stamp for the filename
 date +"%Y-%m-%d_%H-%M-%S"
+
+# Transcript path — Claude Code stores the raw session JSONL under
+# ~/.claude/projects/<encoded-cwd>/<session-id>.jsonl
+# where <encoded-cwd> is $PWD with every "/" replaced by "-".
+SESSION_ID=$(ls -t ~/.claude/session-env/ 2>/dev/null | head -1)
+ENCODED_CWD=$(pwd | sed 's|/|-|g')
+TRANSCRIPT="$HOME/.claude/projects/${ENCODED_CWD}/${SESSION_ID}.jsonl"
+[ -f "$TRANSCRIPT" ] && echo "$TRANSCRIPT" || echo "no-transcript"
 ```
 
 ### 2. Determine output path
@@ -56,6 +64,7 @@ Write `recap.md` inside the folder. The file must follow this template exactly:
 **Branch:** {branch-name}
 **Session ID:** {session-id}
 **Date:** {ISO date-time}
+**Transcript:** [{session-id}.jsonl]({transcript-path})
 
 ---
 
@@ -115,3 +124,4 @@ Output the recap folder path and confirm indexing ran (or that qmd was not found
 - Write every section you have content for. Omit sections that would be empty — don't leave placeholder text.
 - Be concise but specific. A good recap is one someone could read in 2 minutes and know exactly what happened.
 - If the conversation touched multiple unrelated topics, group the Key Decisions and Follow-ups under sub-headings per topic.
+- If the transcript lookup in step 1 returned `no-transcript` (file not found), omit the `**Transcript:**` line entirely from the header.
