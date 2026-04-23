@@ -1,6 +1,6 @@
 ---
 name: recap
-description: Dumps the current conversation into a structured recap markdown file, organised by repo and date-time, stored in .claude/recaps/.
+description: Dumps the current conversation into a structured recap markdown file, organised by repo and date-time, stored in ~/recaps/.
 ---
 
 # Recap
