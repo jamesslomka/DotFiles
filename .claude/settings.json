@@ -87,7 +87,6 @@
       "Bash(aws * put-*)",
       "Bash(aws * modify-*)",
       "Bash(aws * remove-*)",
-      "Bash(aws * start-*)",
       "Bash(aws * stop-*)",
       "Bash(aws * terminate-*)",
       "Bash(aws * run-*)",
