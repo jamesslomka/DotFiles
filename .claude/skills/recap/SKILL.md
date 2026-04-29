@@ -80,6 +80,14 @@ Write `recap.md` inside the folder. The file must follow this template exactly:
 
 ---
 
+---
+
+## What was discussed
+
+{Summarize the entire conversations. What topcis were discussed, options considered and any other information about the conversation}
+
+---
+
 ## Changes Made
 
 {Bulleted list of files created, edited, or deleted. Include a one-line description of what changed. Omit if nothing was changed.}
