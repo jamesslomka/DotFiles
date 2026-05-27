@@ -6,7 +6,7 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "~/.claude/statusline.sh"
+    "command": "~/.claude/scripts/statusline.sh"
   },
   "showThinkingSummaries": true,
   "cleanupPeriodDays": 9999,
@@ -109,5 +109,18 @@
       "Bash(aws dynamodb update-item*)",
       "Bash(aws dynamodb batch-write-item*)"
     ]
-  }
+  },
+  "hooks": {
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run --python 3.11 ~/.claude/scripts/cconvos/convert.py sync --from-hook >>~/.claude/scripts/cconvos/.cconvos.log 2>&1"
+          }
+        ]
+      }
+    ]
+  },
+  "skipDangerousModePermissionPrompt": true
 }
