@@ -1,0 +1,30 @@
+font-size = 12
+window-colorspace = display-p3
+
+background = 161616
+foreground = D6DBE5
+
+cursor-color = B9B9B9
+cursor-text  = 101010
+
+selection-background = B3B3A0
+selection-foreground = D6DBE5
+
+# ANSI palette (0-7 normal, 8-15 bright)
+palette = 0=#1F1F1F
+palette = 1=#F81118
+palette = 2=#2DC55E
+palette = 3=#ECBA0F
+palette = 4=#3EB2FF
+palette = 5=#3398DB
+palette = 6=#4192D8
+palette = 7=#D6DBE5
+palette = 8=#D6DBE5
+palette = 9=#3CE762
+palette = 10=#1DD361
+palette = 11=#F3BD09
+palette = 12=#1081D6
+palette = 13=#5350B9
+palette = 14=#0F7DDB
+palette = 15=#FFFFFF
+
