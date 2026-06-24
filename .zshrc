@@ -144,7 +144,7 @@ prompt pure
 # ------------------------------------------------------------------------------
 # -----------------------------CUSTOM CONFIG:-----------------------------------
 # ------------------------------------------------------------------------------
-export HOMEBREW_NO_INTERACTIVE=1
+export HOMEBREW_NO_ASK=1
 
 # Remove "last login" message from terminal
 if [ ! -e ~/.hushlogin ]
