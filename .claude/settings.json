@@ -12,7 +12,7 @@
   "cleanupPeriodDays": 9999,
   "permissions": {
     "allow": [
-      "Write(**)",
+      "Edit(**)",
       "Read(**)",
       "WebFetch",
       "Bash(npm:*)",
