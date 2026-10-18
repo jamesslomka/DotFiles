@@ -1,0 +1,23 @@
+collections:
+  recaps:
+    path: /Users/james.slomka/recaps
+    pattern: "**/*.md"
+    context:
+      "": Recaps of sessions with Claude Code
+  meetings:
+    path: /Users/james.slomka/mmeetings
+    pattern: "**/*.md"
+    context:
+      "": Meeting summaries, notes, and speaker-attributed transcripts exported from Anarlog by ~/anarlog-sync.sh
+  projects:
+    path: /Users/james.slomka/.claude/projects
+    pattern: "**/*.md"
+  claude-sessions:
+    path: /Users/james.slomka/cconvos
+    pattern: "**/*.md"
+    context:
+      "": Past Claude Code sessions across all projects — user prompts, assistant prose, and collapsed tool-call traces. Use to recall prior work, debugging context, decisions, or how a problem was previously solved.
+models:
+  embed: hf:ggml-org/embeddinggemma-300M-GGUF/embeddinggemma-300M-Q8_0.gguf
+  generate: hf:tobil/qmd-query-expansion-1.7B-gguf/qmd-query-expansion-1.7B-q4_k_m.gguf
+  rerank: hf:ggml-org/Qwen3-Reranker-0.6B-Q8_0-GGUF/qwen3-reranker-0.6b-q8_0.gguf

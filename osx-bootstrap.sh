@@ -33,6 +33,7 @@ pip3 install --user powerline-status
 echo "Installing node packages..."
 NODE_PACKAGES=(
     typescript
+    @tobilu/qmd
 )
 
 npm install -g ${NODE_PACKAGES[@]}
