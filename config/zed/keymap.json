@@ -1,0 +1,22 @@
+[
+  {
+    "context": "Terminal",
+    "bindings": {
+      "shift-enter": [
+        "terminal::SendText",
+        "\u001b\r"
+      ]
+    }
+  },
+  {
+    "context": "Editor",
+    "bindings": {
+      "cmd-shift-l": "editor::SplitSelectionIntoLines"
+    }
+  },
+  {
+    "bindings": {
+      "shift shift": "file_finder::Toggle"
+    }
+  }
+]
