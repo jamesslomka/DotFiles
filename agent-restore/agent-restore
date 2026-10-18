@@ -1,0 +1,171 @@
+#!/bin/bash
+# Reopen Claude Code / Codex sessions that were open in iTerm tabs.
+# Usage: agent-restore [--all]        pick from sessions left open by the tracking hook
+#        agent-restore snapshot       save the current iTerm windows/tabs
+#        agent-restore last [file]    rebuild them from the latest (or given) snapshot
+base="$HOME/.agent-restore"
+dir="$base/open"
+sdir="$base/snapshots"
+self="$0"
+
+resume_cmd() {  # $1 agent, $2 session id
+  case "$1" in codex) echo "codex resume $2" ;; *) echo "claude --resume $2" ;; esac
+}
+
+codex_name() {  # latest thread name Codex recorded for a session id
+  grep -F "\"$1\"" "$HOME/.codex/session_index.jsonl" 2>/dev/null | tail -1 | jq -r '.thread_name // empty'
+}
+
+# _preview <agent> <transcript>: last few user prompts, used by the fzf preview
+if [ "$1" = "_preview" ]; then
+  [ -f "$3" ] || exit 0
+  if [ "$2" = codex ]; then
+    tail -n 2000 "$3" | jq -r 'select(.type=="response_item" and .payload.type=="message" and .payload.role=="user")
+      | [.payload.content[]? | .text? // empty] | join(" ")
+      | select(test("^\\s*(<|# AGENTS.md|The following is the Codex)") | not) | gsub("\n"; " ")' 2>/dev/null
+  else
+    tail -n 400 "$3" | jq -r 'select(.type=="user") | .message.content
+      | if type=="string" then . else (map(.text? // empty)|join(" ")) end' 2>/dev/null
+  fi | grep -v '^$' | tail -5 | cut -c1-300
+  exit 0
+fi
+
+# session ids that are running right now, so we never open a second copy
+live=" $(
+  for j in "$HOME"/.claude/sessions/*.json; do
+    pid=$(jq -r .pid "$j" 2>/dev/null); [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null && jq -r .sessionId "$j"
+  done
+  # Codex: rollout files held open by a codex process, plus explicit `codex resume <id>` args
+  lsof -c codex -Fn 2>/dev/null | sed -n 's/^n.*rollout-.*-\([0-9a-f-]\{36\}\)\.jsonl$/\1/p'
+  ps -axo command= 2>/dev/null | sed -n 's/.*codex resume \([0-9a-f-]\{36\}\).*/\1/p'
+) "
+live=" $(tr '\n' ' ' <<<"$live") "
+
+osa_write() {  # $1 = "window" or "tab", $2 = command to type into the new pane
+  local cmd; cmd=$(printf %s "$2" | sed 's/\\/\\\\/g; s/"/\\"/g')
+  if [ "$1" = window ]; then
+    osascript -e 'tell application "iTerm2"' -e 'set w to (create window with default profile)' \
+      -e "tell current session of w to write text \"$cmd\"" -e 'end tell' >/dev/null
+  else
+    osascript -e 'tell application "iTerm2"' -e 'if (count of windows) = 0 then create window with default profile' \
+      -e 'tell current window' -e 'set t to (create tab with default profile)' \
+      -e "tell current session of t to write text \"$cmd\"" -e 'end tell' -e 'end tell' >/dev/null
+  fi
+}
+
+# snapshot: save the current iTerm layout (windows -> tabs -> panes) with each pane's cwd and,
+# if it's running Claude or Codex, its session id. Restore it later with `agent-restore last`.
+if [ "$1" = "snapshot" ]; then
+  mkdir -p "$sdir"
+  layout=$(osascript <<'OSA'
+set out to ""
+tell application "iTerm2"
+  set wi to 0
+  repeat with w in windows
+    set wi to wi + 1
+    set ti to 0
+    repeat with t in tabs of w
+      set ti to ti + 1
+      repeat with s in sessions of t
+        set out to out & wi & tab & ti & tab & (unique id of s) & tab & (tty of s) & linefeed
+      end repeat
+    end repeat
+  end repeat
+end tell
+return out
+OSA
+  ) || { echo "Couldn't read iTerm layout." >&2; exit 1; }
+  [ -z "$layout" ] && { echo "No iTerm windows open, nothing saved."; exit 1; }
+
+  panes=()
+  while IFS=$'\t' read -r win tab guid tty; do
+    [ -z "$tty" ] && continue
+    agent="" sid="" name="" cwd=""
+    procs=$(ps -t "${tty#/dev/}" -o pid=,command= 2>/dev/null)
+    # a Claude process registers itself in ~/.claude/sessions/<pid>.json
+    while read -r pid _; do
+      j="$HOME/.claude/sessions/$pid.json"
+      if [ -f "$j" ]; then
+        agent=claude sid=$(jq -r .sessionId "$j") cwd=$(jq -r .cwd "$j") name=$(jq -r '.name // ""' "$j"); break
+      fi
+    done <<<"$procs"
+    # Codex has no pid registry; trust the hook's entry for this pane if codex is running on it
+    if [ -z "$agent" ] && grep -Eq '(^|/)codex( |$)' <<<"$(cut -c8- <<<"$procs")" \
+       && [ "$(jq -r '.agent // ""' "$dir/$guid.json" 2>/dev/null)" = codex ]; then
+      agent=codex sid=$(jq -r .sessionId "$dir/$guid.json") cwd=$(jq -r .cwd "$dir/$guid.json")
+      name=$(codex_name "$sid")
+    fi
+    if [ -z "$cwd" ]; then
+      shpid=$(awk '$2 ~ /zsh$|bash$|fish$/ {print $1; exit}' <<<"$procs")
+      [ -n "$shpid" ] && cwd=$(lsof -a -p "$shpid" -d cwd -Fn 2>/dev/null | sed -n 's/^n//p')
+    fi
+    panes+=("$(jq -nc --argjson w "$win" --argjson t "$tab" --arg cwd "${cwd:-$HOME}" \
+      --arg agent "$agent" --arg sid "$sid" --arg name "$name" \
+      '{window:$w,tab:$t,cwd:$cwd,agent:$agent,sessionId:$sid,name:$name}')")
+  done <<<"$layout"
+
+  out="$sdir/$(date +%Y%m%d-%H%M%S).json"
+  printf '%s\n' "${panes[@]}" | jq -s --argjson now "$(date +%s)" '{takenAt:$now,panes:.}' > "$out"
+  ln -sf "$out" "$sdir/latest.json"
+  ls -t "$sdir"/2*.json | tail -n +21 | xargs rm -f     # keep the last 20
+
+  jq -r '"Saved \([.panes[].window]|unique|length) window(s), \([.panes[]|"\(.window)-\(.tab)"]|unique|length) tab(s), " +
+    "\([.panes[]|select(.agent=="claude")]|length) Claude + \([.panes[]|select(.agent=="codex")]|length) Codex session(s)"' "$out"
+  echo "-> $out"
+  exit 0
+fi
+
+# last [file]: rebuild windows/tabs saved by `agent-restore snapshot` (defaults to the latest)
+if [ "$1" = "last" ]; then
+  snap="${2:-$sdir/latest.json}"
+  [ -f "$snap" ] || { echo "No snapshot at $snap (run \`agent-restore snapshot\` first)."; exit 1; }
+  echo "Snapshot from $(date -r "$(jq -r .takenAt "$snap")" '+%a %m-%d %H:%M')"
+  # one row per tab; a tab with split agent panes gets one tab per session
+  rows=$(jq -r '.panes | group_by([.window,.tab])[] |
+      (map(select(.sessionId!="")) | if length>0 then . else empty end) // [.[0]] | .[] |
+      [.window, (if .sessionId!="" then "\(.agent)  \(.name)" else "shell" end), .cwd, .agent, .sessionId] | @tsv' "$snap" |
+    while IFS=$'\t' read -r w label cwd agent sid; do
+      [ -n "$sid" ] && case "$live" in (*" $sid "*) continue;; esac   # already running
+      printf '%s\t%s\t%s\t%s\t%s\n' "$w" "$label" "$(sed "s|^$HOME|~|" <<<"$cwd")" "$agent" "$sid"
+    done)
+  [ -z "$rows" ] && { echo "Nothing to restore."; exit 0; }
+  sel=$(fzf -m --delimiter=$'\t' --with-nth=1,2,3 --bind 'load:select-all' \
+    --header 'all selected; TAB to untick, ENTER restore' <<<"$rows")
+  [ -z "$sel" ] && exit 0
+  prev=""
+  while IFS=$'\t' read -r w _ cwd agent sid; do
+    cwd="${cwd/#\~/$HOME}"
+    cmd="cd $(printf %q "$cwd")"; [ -n "$sid" ] && cmd="$cmd && $(resume_cmd "$agent" "$sid")"
+    if [ "$w" != "$prev" ]; then osa_write window "$cmd"; else osa_write tab "$cmd"; fi
+    prev="$w"
+  done <<<"$sel"
+  exit 0
+fi
+
+rows=()
+for f in "$dir"/*.json; do
+  [ -e "$f" ] || continue
+  sid=$(jq -r .sessionId "$f")
+  case "$live" in *" $sid "*) continue;; esac       # already running somewhere
+  agent=$(jq -r '.agent // "claude"' "$f")
+  name=$(jq -r '.name // ""' "$f"); [ "$agent" = codex ] && name=$(codex_name "$sid")
+  ts=$(jq -r .lastSeen "$f")
+  rows+=("$ts"$'\t'"$sid"$'\t'"$(date -r "$ts" '+%m-%d %H:%M')"$'\t'"$agent"$'\t'"$name"$'\t'"$(jq -r .cwd "$f" | sed "s|^$HOME|~|")"$'\t'"$(basename "$f")")
+done
+[ ${#rows[@]} -eq 0 ] && { echo "Nothing to restore."; exit 0; }
+sorted=$(printf '%s\n' "${rows[@]}" | sort -rn)
+
+if [ "$1" = "--all" ]; then sel="$sorted"; else
+  sel=$(echo "$sorted" | fzf -m --delimiter=$'\t' --with-nth=3,4,5,6 \
+    --header 'TAB select, ENTER restore, ctrl-x forget' \
+    --bind "ctrl-x:execute-silent(rm -f $dir/{7})+abort" \
+    --preview "$self _preview {4} \"\$(jq -r .transcript $dir/{7})\"" \
+    --preview-window=down:6:wrap)
+fi
+[ -z "$sel" ] && exit 0
+
+while IFS=$'\t' read -r _ sid _ agent _ _ file; do
+  cwd=$(jq -r .cwd "$dir/$file")
+  osa_write tab "cd $(printf %q "$cwd") && $(resume_cmd "$agent" "$sid")"
+  rm -f "$dir/$file"     # the resumed session re-registers itself under its new pane
+done <<<"$sel"
