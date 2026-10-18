@@ -1,7 +1,21 @@
 # cconvos
 
-Convert Claude Code session transcripts (`~/.claude/projects/*/*.jsonl`) into
-search-optimised markdown for indexing with [QMD](https://github.com/tobi/qmd).
+Convert Claude Code **and** Codex CLI session logs into search-optimised
+markdown for indexing with [QMD](https://github.com/tobi/qmd).
+
+Two sources are supported, each tagged in the output's `source:` frontmatter:
+
+| Source | Logs | `source:` |
+|---|---|---|
+| Claude Code | `~/.claude/projects/*/*.jsonl` | `claude` |
+| Codex CLI | `~/.codex/sessions/**/*.jsonl` | `codex` |
+
+Pick what to process with `--source claude|codex|both` (default `both`). The
+two formats differ — Codex uses the OpenAI Responses item schema (`response_item`
+records: `message`, `reasoning`, `function_call`/`function_call_output`,
+`custom_tool_call` for `apply_patch`, …) and interleaves a lot of duplicate
+`event_msg` / telemetry that gets dropped — but both render into the identical
+markdown shape so QMD search is uniform across them.
 
 The whole point is **embedding quality**. Raw transcripts are mostly noise
 (hook output, environment dumps, large file reads echoed back, todo state
@@ -22,16 +36,26 @@ cconvos() { uv run ~/cconvos-converter/convert.py "$@"; }
 ## Usage
 
 ```sh
-cconvos convert --limit 5            # sample run (5 sessions)
-cconvos convert                      # full bulk conversion
-cconvos convert --force               # re-convert everything (after policy tune)
+cconvos convert --limit 5            # sample run (5 sessions, both sources)
+cconvos convert                      # full bulk conversion (both sources)
+cconvos convert --source codex       # Codex sessions only
+cconvos convert --source claude      # Claude sessions only
+cconvos convert --force              # re-convert everything (after policy tune)
 cconvos sync                         # convert + qmd embed
 cconvos status                       # show stale / missing / orphan files
-cconvos status --prune-orphans       # delete .md files whose source jsonl is gone
+cconvos status --prune-orphans       # delete .md files whose source log is gone
 ```
 
-Output goes to `~/cconvos/<project-name>/<YYYY-MM-DD>-<sid8>.md` plus
-`<...>.tools.jsonl` (sidecar with full tool inputs/outputs by index).
+Output goes to:
+
+- Claude: `~/cconvos/<project-name>/<YYYY-MM-DD>-<sid8>.md`
+- Codex:  `~/cconvos/<project-name>/<YYYY-MM-DD>-codex-<sid12>.md`
+
+plus a `<...>.tools.jsonl` sidecar (full tool inputs/outputs by index). Codex
+ids use **12** hex chars, not 8: Codex session ids are UUIDv7, whose first 8
+hex are a coarse (~65s) timestamp shared by sessions started close together —
+12 hex is the full millisecond timestamp, so same-day sessions never collide on
+the filename.
 
 ## Keep / drop / collapse policy
 
@@ -53,6 +77,29 @@ All policy lives in `classify()` in `convert.py`. Edit there, re-run with
 | `attachment` (other) | DROP | MCP instruction deltas etc. |
 | `pr-link` | EMIT_NOTE | Linked: `[PR opened: owner/repo#N](url)`. |
 | `progress`, `permission-mode`, `last-prompt`, `file-history-snapshot`, `queue-operation` | DROP | Pure telemetry. |
+
+## Codex keep / drop / collapse policy
+
+Codex doesn't go through `classify()`; its policy lives in `_convert_codex()`.
+The body is built **only** from `response_item` records (the canonical, ordered,
+call-id-paired stream). `event_msg`, `turn_context`, `token_count` and
+`session_meta` records are duplicates or telemetry and are dropped.
+
+| `response_item` payload | Action | Notes |
+|---|---|---|
+| `message` role=user | KEEP_PROSE | Unless synthetic (AGENTS.md, `<environment_context>`, `<user_instructions>`, approval scaffolding, IDE context, `<turn_aborted>`) — those are dropped as `codex-synthetic-user`. |
+| `message` role=assistant | KEEP_PROSE | Verbatim `output_text`. |
+| `message` role=developer | DROP | Permission/instruction injections. |
+| `reasoning` | KEEP_PROSE | `summary[].text` rendered as `> *thinking:*`. Full `content` is usually encrypted/null. Toggle with `KEEP_THINKING`. |
+| `function_call` | COLLAPSE_TOOL | `shell`/`exec_command`/`shell_command` → `[shell: <cmd> → tool#N]`; `update_plan` → step count; else `[<name> → tool#N]`. |
+| `custom_tool_call` | COLLAPSE_TOOL | `apply_patch` → `[apply_patch: N file(s) → tool#N]`. |
+| `function_call_output` / `custom_tool_call_output` | (paired) | Mutates the tool line with `(NL)` / `⚠ exit N` / `⚠ error`. Handles both the plain-text (`Exit code: … Output: …`) and older JSON-wrapped (`{"output":…,"metadata":{"exit_code":N}}`) shapes. |
+| `web_search_call` | COLLAPSE_TOOL | `[WebSearch <url> → tool#N]`. |
+| `compacted` (top-level) | EMIT_NOTE | Compaction boundary hr. |
+| `ghost_snapshot`, `tool_search_*`, encrypted dupes | DROP | |
+
+Legacy flat `~/.codex/sessions/rollout-*.json` files (pre-dated-directory
+schema) are intentionally skipped — only nested `*.jsonl` rollouts are read.
 
 ## Tool-result pairing
 
@@ -133,6 +180,12 @@ automatically:
 Session id is resolved with a 3-tier fallback: stdin JSON payload → env var
 (`CLAUDE_SESSION_ID`) → most-recently-modified `.jsonl`. Robust across hook
 API revisions.
+
+`--from-hook` is Claude-only (it implies `--source claude`). Codex has no
+equivalent SessionEnd hook, so Codex sessions are picked up by a periodic full
+`cconvos sync` (or `cconvos sync --source codex`) — e.g. a cron / launchd job,
+or just running it manually. The active-session guard skips any log modified in
+the last 60s, so a running Codex session won't be half-converted.
 
 The log file at `~/.cconvos.log` self-rotates: when it exceeds 1 MB, the
 script truncates to the last 500 lines on the next run. No external rotation

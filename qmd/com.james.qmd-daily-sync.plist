@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.james.qmd-daily-sync</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/james.slomka/bin/qmd-daily-sync.sh</string>
+  </array>
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Hour</key>
+    <integer>8</integer>
+    <key>Minute</key>
+    <integer>17</integer>
+  </dict>
+  <key>RunAtLoad</key>
+  <false/>
+  <key>Nice</key>
+  <integer>10</integer>
+  <key>StandardOutPath</key>
+  <string>/Users/james.slomka/Library/Logs/qmd-daily-sync.launchd.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/james.slomka/Library/Logs/qmd-daily-sync.launchd.log</string>
+</dict>
+</plist>
